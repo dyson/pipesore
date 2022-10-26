@@ -1,0 +1,82 @@
+// MIT License
+
+// Copyright (c) 2019 John Arundel, 2022 Dyson Simmons
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// MIT License
+
+package pipeline
+
+import (
+	"io"
+	"sync"
+)
+
+// NewPipeline returns new pipeline given	a io.Reader.
+func NewPipeline(r io.Reader) *pipeline {
+	return &pipeline{r: r}
+}
+
+// A pipeline contains the io.Reader the next filter is to read from as well as
+// a mutex protected error for all filter errors to be written to.
+type pipeline struct {
+	r io.Reader
+
+	err error
+	mu  sync.Mutex
+}
+
+// SetError writes an error to the pipline.
+func (p *pipeline) SetError(err error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	p.err = err
+}
+
+// Filter takes a filter function and filters the current pipelines io.Reader
+// with it. It writes the output to an io.Pipe() and sets the pipelines
+// io.Reader to the io.Pipe io.Reader ready for the next filter to consume. If
+// the filter errors the error is set on the pipeline.
+func (p *pipeline) Filter(filter func(io.Reader, io.Writer) error) {
+	r := p.r
+
+	pr, pw := io.Pipe()
+
+	go func() {
+		defer pw.Close()
+
+		err := filter(r, pw)
+		p.SetError(err)
+	}()
+
+	p.r = pr
+}
+
+// Output copies from the pipelines io.Reader and writes it to the provided
+// io.Writer.
+func (p *pipeline) Output(out io.Writer) (int64, error) {
+	i, err := io.Copy(out, p.r)
+	if p.err != nil {
+		return i, p.err
+	}
+
+	return i, err
+}
