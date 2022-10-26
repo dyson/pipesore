@@ -1,5 +1,6 @@
 # Pipesore: A command-line text processor that nobody asked for
 
+![version](https://img.shields.io/github/v/tag/dyson/pipesore?label=version)
 [![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
 
 *Pipe* because it's similar to unix like pipes and *sore* because the initial
