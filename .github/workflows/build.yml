@@ -1,0 +1,23 @@
+name: build
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+          cache: true
+      - name: Test with coverage
+        run: go test -v -covermode=count -coverprofile=coverage.out ./...
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1
+      - name: Submit coverage to coverall
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.lcov
