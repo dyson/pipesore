@@ -1,5 +1,7 @@
 # Pipesore: A command-line text processor that nobody asked for
 
+[![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
+
 *Pipe* because it's similar to unix like pipes and *sore* because the initial
 hackathon version of this project was an eyesore.
 
