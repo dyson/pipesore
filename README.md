@@ -3,6 +3,7 @@
 ![version](https://img.shields.io/github/v/tag/dyson/pipesore?label=version)
 [![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
 [![build workflow](https://github.com/dyson/pipesore/actions/workflows/build.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/build.yml)
+[![license](https://img.shields.io/github/license/dyson/pipesore.svg)](https://github.com/dyson/pipesore/blob/master/LICENSE)
 
 *Pipe* because it's similar to unix like pipes and *sore* because the initial
 hackathon version of this project was an eyesore.
@@ -79,3 +80,5 @@ first line of the input and return all other lines.
 | Replace(old *string*, replace *string*)         | Replaces all non-overlapping instances of `old` with `replace`. |
 | ReplaceRegex(regex *string*, replace *string*)  | Replaces all matches of the compiled regular expression `regex` with `replace`. Inside `replace`, `$` signs represent submatches. For example `$1` represents the text of the first submatch. |
 
+## License
+See [LICENSE](https://github.com/dyson/pipesore/blob/master/LICENSE) file.
