@@ -2,7 +2,8 @@
 
 ![version](https://img.shields.io/github/v/tag/dyson/pipesore?label=version)
 [![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
-[![build workflow](https://github.com/dyson/pipesore/actions/workflows/build.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/build.yml)
+[![build](https://github.com/dyson/pipesore/actions/workflows/build.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/build.yml)
+[![release](https://github.com/dyson/pipesore/actions/workflows/release.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/release.yml)
 [![license](https://img.shields.io/github/license/dyson/pipesore.svg)](https://github.com/dyson/pipesore/blob/master/LICENSE)
 
 *Pipe* because it's similar to unix like pipes and *sore* because the initial
