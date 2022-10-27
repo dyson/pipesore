@@ -34,6 +34,8 @@ pipesore before.
 
 ## Installation
 
+Download a stable [release](https://github.com/dyson/pipesore/releases) or install the latest development version with:
+
 ```bash
 $ go install github.com/dyson/pipesore/cmd/pipesore@main
 ```
