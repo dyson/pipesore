@@ -1,9 +1,11 @@
 # Pipesore: A command-line text processor that nobody asked for
 
 ![version](https://img.shields.io/github/v/tag/dyson/pipesore?label=version)
-[![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
-[![build](https://github.com/dyson/pipesore/actions/workflows/build.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/build.yml)
 [![release](https://github.com/dyson/pipesore/actions/workflows/release.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/release.yml)
+[![build](https://github.com/dyson/pipesore/actions/workflows/build.yml/badge.svg)](https://github.com/dyson/pipesore/actions/workflows/build.yml)
+[![test coverage](https://coveralls.io/repos/github/dyson/pipesore/badge.svg?branch=main)](https://coverallsio/github/dyson/pipesore?branch=main)
+[![maintainability](https://api.codeclimate.com/v1/badges/a9de05463178f58c181f/maintainability)](https://codeclimate.com/github/dyson/pipesore/maintainability)
+[![go report](https://goreportcard.com/badge/github.com/dyson/pipesore)](https://goreportcard.com/report/github.com/dyson/pipesore)
 [![license](https://img.shields.io/github/license/dyson/pipesore.svg)](https://github.com/dyson/pipesore/blob/master/LICENSE)
 
 *Pipe* because it's similar to unix like pipes and *sore* because the initial
