@@ -20,6 +20,9 @@ func TestFilters(t *testing.T) {
 		input  string
 		want   string
 	}{
+		{Columns(",", "3,2,1"), "one\t\tthree\n", "one\t\tthree\n"},
+		{Columns("\t", "9"), "one\t\tthree\n", "\n"},
+		{Columns("\t", "3,2,1"), "one\t\tthree\n", "three\t\tone\n"},
 		{CountLines(), "", "0\n"},
 		{CountLines(), input, "3\n"},
 		{CountRunes(), "", "0\n"},

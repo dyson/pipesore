@@ -15,7 +15,7 @@ import (
 
 var (
 	Filters = map[string]reflect.Value{
-		// "columns":      reflect.ValueOf(Columns),
+		"columns":      reflect.ValueOf(Columns),
 		"countlines":   reflect.ValueOf(CountLines),
 		"countrunes":   reflect.ValueOf(CountRunes),
 		"countwords":   reflect.ValueOf(CountWords),
@@ -34,11 +34,39 @@ var (
 	}
 )
 
-// TODO
-func Columns(delimiter int, columns string) func(io.Reader, io.Writer) error {
+// Columns returns a filter that writes the selected 'columns' in the order
+// provided where 'columns' is a 1-indexed comma separated list of column positions.
+// Columns are defined by splitting with the 'delimiter'.
+func Columns(delimiter string, columns string) func(io.Reader, io.Writer) error {
 	return func(r io.Reader, w io.Writer) error {
-		return nil
+		order := []int{}
+		for _, column := range strings.Split(columns, ",") {
+			index, err := strconv.Atoi(strings.TrimSpace(column))
+			if err != nil {
+				return fmt.Errorf("list of columns must be comma serarated list of ints, got: %v", columns)
+			}
+
+			order = append(order, index)
+		}
+
+		scanner := bufio.NewScanner(r)
+
+		for scanner.Scan() {
+			lineColumns := strings.Split(scanner.Text(), delimiter)
+
+			output := []string{}
+			for _, v := range order {
+				if v-1 < len(lineColumns) {
+					output = append(output, lineColumns[v-1])
+				}
+			}
+
+			fmt.Fprintln(w, strings.Join(output, delimiter))
+		}
+
+		return scanner.Err()
 	}
+
 }
 
 // CountLines returns a filter that writes the number of lines read.
@@ -134,7 +162,8 @@ func NotFirst(n int) func(io.Reader, io.Writer) error {
 	}
 }
 
-// Join returns a filter that writes all lines as a single string separated by 'delimiter'.
+// Join returns a filter that writes all lines as a single string separated by
+// 'delimiter'.
 func Join(delimiter string) func(io.Reader, io.Writer) error {
 	return func(r io.Reader, w io.Writer) error {
 		scanner := bufio.NewScanner(r)
@@ -338,9 +367,9 @@ func ReplaceRegex(regex *regexp.Regexp, replace string) func(io.Reader, io.Write
 
 // MIT License
 
-// Frequency returns a filter that writes unique lines from the input, prefixed with a frequency
-// count, in descending numerical order (most frequent lines first). Lines with
-// equal frequency will be sorted alphabetically.
+// Frequency returns a filter that writes unique lines from the input, prefixed
+// with a frequency count, in descending numerical order (most frequent lines
+// first). Lines with equal frequency will be sorted alphabetically.
 //
 // This is a common pattern in shell scripts to find the most
 // frequently-occurring lines in a file:

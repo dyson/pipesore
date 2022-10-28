@@ -68,7 +68,7 @@ first line of the input and return all other lines.
 
 | Filter                                          |         |
 | ------                                          | ------- |
-| Columns()                                       | TODO    |
+| Columns(delimiter *string*, columns *string*)   | Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Columns are defined by splitting with the 'delimiter'. |
 | CountLines()                                    | Returns the line count. Lines are delimited by `\r?\n`. |
 | CountRunes()                                    | Returns the rune (Unicode code points) count. Erroneous and short encodings are treated as single runes of width 1 byte. |
 | CountWords()                                    | Returns the word count. Words are delimited by<br />`\t\|\n\|\v\|\f\|\r\| \|0x85\|0xA0`. |
