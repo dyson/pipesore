@@ -1,3 +1,4 @@
+---
 builds:
   - main: ./cmd/pipesore/main.go
     env:
@@ -5,10 +6,6 @@ builds:
     goos:
       - linux
       - darwin
-archives:
-  - replacements:
-      darwin: macOS
-      386: i386
 checksum:
   name_template: 'checksums.txt'
 changelog:
