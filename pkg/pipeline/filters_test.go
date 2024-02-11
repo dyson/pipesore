@@ -23,6 +23,9 @@ func TestFilters(t *testing.T) {
 		{Columns(",", "3,2,1"), "one\t\tthree\n", "one\t\tthree\n"},
 		{Columns("\t", "9"), "one\t\tthree\n", "\n"},
 		{Columns("\t", "3,2,1"), "one\t\tthree\n", "three\t\tone\n"},
+		{ColumnsCSV(",", "3,2,1"), "one\t\tthree\n", "one\t\tthree\n"},
+		{ColumnsCSV("\t", "9"), "one\t\tthree\n", "\n"},
+		{ColumnsCSV(",", "3,2,1"), "one,\"t,w,o\",\"th\"\"ree\"\n", "\"th\"\"ree\",\"t,w,o\",one\n"},
 		{CountLines(), "", "0\n"},
 		{CountLines(), input, "3\n"},
 		{CountRunes(), "", "0\n"},
@@ -69,7 +72,7 @@ func TestFilters(t *testing.T) {
 
 			err := tc.filter(strings.NewReader(tc.input), got)
 			if err != nil {
-				t.Fatalf("(test: %d) error executing filter: %v", k, err)
+				t.Fatalf("(test: %d) error executing filter: %v: input: %v", k, err, tc.input)
 			}
 
 			if tc.want != got.String() {

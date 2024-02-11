@@ -26,7 +26,7 @@ for a good list and examples). These tools do a single job well and have many
 powerful features to accomplish anything you might want to do.
 
 On the other hand there can be a bit of a learning curve to remember their
-names , flags, and usage - even for basic tasks.
+names, flags, and usage - even for basic tasks.
 
 Pipesore is intended to be a single command that covers the most useful use
 cases of these tools while being intuitive to even someone who has never seen
@@ -69,6 +69,8 @@ first line of the input and return all other lines.
 | Filter                                          |         |
 | ------                                          | ------- |
 | Columns(delimiter *string*, columns *string*)   | Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Columns are defined by splitting with the 'delimiter'. |
+
+| ColumnsCSV(delimiter *string*, columns *string*)| Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Parsing is CSV aware so quoted columns containing the `delimiter` when splitting are preserved. |
 | CountLines()                                    | Returns the line count. Lines are delimited by `\r?\n`. |
 | CountRunes()                                    | Returns the rune (Unicode code points) count. Erroneous and short encodings are treated as single runes of width 1 byte. |
 | CountWords()                                    | Returns the word count. Words are delimited by<br />`\t\|\n\|\v\|\f\|\r\| \|0x85\|0xA0`. |

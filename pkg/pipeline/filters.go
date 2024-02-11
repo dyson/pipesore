@@ -3,6 +3,7 @@ package pipeline
 import (
 	"bufio"
 	"container/ring"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"reflect"
@@ -16,6 +17,7 @@ import (
 var (
 	Filters = map[string]reflect.Value{
 		"columns":      reflect.ValueOf(Columns),
+		"columnscsv":   reflect.ValueOf(ColumnsCSV),
 		"countlines":   reflect.ValueOf(CountLines),
 		"countrunes":   reflect.ValueOf(CountRunes),
 		"countwords":   reflect.ValueOf(CountWords),
@@ -43,7 +45,7 @@ func Columns(delimiter string, columns string) func(io.Reader, io.Writer) error 
 		for _, column := range strings.Split(columns, ",") {
 			index, err := strconv.Atoi(strings.TrimSpace(column))
 			if err != nil {
-				return fmt.Errorf("list of columns must be comma serarated list of ints, got: %v", columns)
+				return fmt.Errorf("list of columns must be comma separated list of ints, got: %v", columns)
 			}
 
 			order = append(order, index)
@@ -66,7 +68,69 @@ func Columns(delimiter string, columns string) func(io.Reader, io.Writer) error 
 
 		return scanner.Err()
 	}
+}
 
+// ColumnsCSV returns a CSV aware filter that writes the selected 'columns' in
+// the order provided where 'columns' is a 1-indexed comma separated list of
+// column positions. Columns are defined by splitting with the 'delimiter'.
+func ColumnsCSV(delimiter string, columns string) func(io.Reader, io.Writer) error {
+	return func(r io.Reader, w io.Writer) error {
+		if utf8.RuneCount([]byte(delimiter)) > 1 {
+			return fmt.Errorf("delimeter must be a single rune, got: %s", delimiter)
+		}
+
+		order := []int{}
+		for _, column := range strings.Split(columns, ",") {
+			index, err := strconv.Atoi(strings.TrimSpace(column))
+			if err != nil {
+				return fmt.Errorf("list of columns must be comma separated list of ints, got: %v", columns)
+			}
+
+			order = append(order, index)
+		}
+
+		reader := csv.NewReader(r)
+		reader.Comma, _ = utf8.DecodeRuneInString(delimiter)
+		// We really shouldn't be tolerant of malformed CSV input (and should
+		// error) however we can set LazyQuotes to be less strict for commonly
+		// incorrect quoting.
+		//
+		// Unfortunately how incorrect quoting should be interpreted is highly
+		// dependent on how it was incorrectly implemented and so with LazyQuotes
+		// enabled we will in some cases silently parse malformed CSV in a possibly
+		// unexpected way to the user.
+		//
+		// On the other hand users don't always have control over the generation of
+		// the CSV input and so it is hoped that the trade-off in using LazyQuotes
+		// will allow for a better experience overall. If this is not that case we
+		// can disable LazyQuotes and only parse valid rfc4180
+		// (https://www.rfc-editor.org/rfc/rfc4180.html) csv.
+		reader.LazyQuotes = true
+
+		writer := csv.NewWriter(w)
+		defer writer.Flush()
+
+		for {
+			lineColumns, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return err
+			}
+
+			output := []string{}
+			for _, v := range order {
+				if v-1 < len(lineColumns) {
+					output = append(output, lineColumns[v-1])
+				}
+			}
+
+			writer.Write(output)
+		}
+
+		return nil
+	}
 }
 
 // CountLines returns a filter that writes the number of lines read.
