@@ -40,8 +40,13 @@ func TestGetToken(t *testing.T) {
 	l := newLexer(filters)
 
 	for k, tc := range tests {
+		k := k
+		tc := tc
+
+		got := l.getToken()
+
 		t.Run(fmt.Sprint(k), func(t *testing.T) {
-			got := l.getToken()
+			t.Parallel()
 
 			if got.ttype != tc.wantedType || got.literal != tc.wantedLiteral {
 				t.Logf("tokentype wanted=%q, got=%q", tc.wantedType, got.ttype)

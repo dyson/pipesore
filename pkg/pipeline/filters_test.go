@@ -68,6 +68,8 @@ func TestFilters(t *testing.T) {
 
 	for k, tc := range tests {
 		t.Run(fmt.Sprint(k), func(t *testing.T) {
+			t.Parallel()
+
 			got := &bytes.Buffer{}
 
 			err := tc.filter(strings.NewReader(tc.input), got)
