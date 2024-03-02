@@ -67,6 +67,10 @@ func TestFilters(t *testing.T) {
 	}
 
 	for k, tc := range tests {
+		// TODO: remove shadowing once using go v1.22
+		k := k
+		tc := tc
+
 		t.Run(fmt.Sprint(k), func(t *testing.T) {
 			t.Parallel()
 

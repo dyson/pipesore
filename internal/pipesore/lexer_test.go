@@ -2,6 +2,7 @@ package pipesore
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -10,31 +11,28 @@ func TestGetToken(t *testing.T) {
 
 	filters := `Replace(" ", "\n") | Freq() | First(1)`
 
-	tests := []struct {
-		wantedType    tokenType
-		wantedLiteral string
-	}{
-		{FUNCTION, "Replace"},
-		{LPAREN, "("},
-		{STRING, " "},
-		{COMMA, ","},
-		{STRING, "\n"},
-		{RPAREN, ")"},
+	tests := []token{
+		{ttype: FILTER, literal: "Replace", position: position{start: 0, end: 7}},
+		{ttype: LPAREN, literal: "(", position: position{start: 7, end: 8}},
+		{ttype: STRING, literal: " ", position: position{start: 8, end: 11}},
+		{ttype: COMMA, literal: ",", position: position{start: 11, end: 12}},
+		{ttype: STRING, literal: "\n", position: position{start: 13, end: 17}},
+		{ttype: RPAREN, literal: ")", position: position{start: 17, end: 18}},
 
-		{PIPE, "|"},
+		{ttype: PIPE, literal: "|", position: position{start: 19, end: 20}},
 
-		{FUNCTION, "Freq"},
-		{LPAREN, "("},
-		{RPAREN, ")"},
+		{ttype: FILTER, literal: "Freq", position: position{start: 21, end: 25}},
+		{ttype: LPAREN, literal: "(", position: position{start: 25, end: 26}},
+		{ttype: RPAREN, literal: ")", position: position{start: 26, end: 27}},
 
-		{PIPE, "|"},
+		{ttype: PIPE, literal: "|", position: position{start: 28, end: 29}},
 
-		{FUNCTION, "First"},
-		{LPAREN, "("},
-		{INT, "1"},
-		{RPAREN, ")"},
+		{ttype: FILTER, literal: "First", position: position{start: 30, end: 35}},
+		{ttype: LPAREN, literal: "(", position: position{start: 35, end: 36}},
+		{ttype: INT, literal: "1", position: position{start: 36, end: 37}},
+		{ttype: RPAREN, literal: ")", position: position{start: 37, end: 38}},
 
-		{EOF, "\000"},
+		{ttype: EOF, literal: "", position: position{start: 38, end: 39}},
 	}
 
 	l := newLexer(filters)
@@ -48,9 +46,8 @@ func TestGetToken(t *testing.T) {
 		t.Run(fmt.Sprint(k), func(t *testing.T) {
 			t.Parallel()
 
-			if got.ttype != tc.wantedType || got.literal != tc.wantedLiteral {
-				t.Logf("tokentype wanted=%q, got=%q", tc.wantedType, got.ttype)
-				t.Fatalf("literal wanted=%q, got=%q", tc.wantedLiteral, got.literal)
+			if !reflect.DeepEqual(tc, got) {
+				t.Fatalf("wanted: %#v, got: %#v", tc, got)
 			}
 		})
 	}

@@ -22,17 +22,15 @@ func (p *parser) nextToken() *parser {
 func (p *parser) parse() (*ast, error) {
 	tree := newAST()
 
-	if p.nextToken().tokenIsType(EOF) {
-		return tree, nil
-	}
+	p.nextToken()
 
 	for {
-		f, err := p.parseFunction()
+		f, err := p.parseFilter()
 		if err != nil {
 			return nil, err
 		}
 
-		tree.functions = append(tree.functions, *f)
+		tree.filters = append(tree.filters, *f)
 
 		if p.nextToken().tokenIsType(EOF) {
 			break
@@ -65,27 +63,32 @@ func (p *parser) tokenIsTypes(tts ...tokenType) bool {
 
 func (p *parser) tokenMustType(tt tokenType) error {
 	if !p.tokenIsType(tt) {
-		return fmt.Errorf("unexpected %s (%s), expected %s", p.t.ttype, p.t.literal, tt)
+		return newSyntaxError(
+			fmt.Errorf("unexpected %s: expected '%s'", p.t, tt),
+			p.t.position,
+		)
 	}
-
 	return nil
 }
 
 func (p *parser) tokenMustTypes(tts ...tokenType) error {
 	if !p.tokenIsTypes(tts...) {
-		return fmt.Errorf("unexpected %s (%s), expected one of %s", p.t.ttype, p.t.literal, tts)
+		return newSyntaxError(
+			fmt.Errorf("unexpected %s: expected one of '%s'", p.t, tts),
+			p.t.position,
+		)
 	}
 
 	return nil
 }
 
-func (p *parser) parseFunction() (*function, error) {
-	err := p.tokenMustType(FUNCTION)
+func (p *parser) parseFilter() (*filter, error) {
+	err := p.tokenMustType(FILTER)
 	if err != nil {
 		return nil, err
 	}
 
-	name := p.t.literal
+	filterToken := p.t
 
 	err = p.nextToken().tokenMustType(LPAREN)
 	if err != nil {
@@ -102,9 +105,10 @@ func (p *parser) parseFunction() (*function, error) {
 		return nil, err
 	}
 
-	f := function{
-		name:      name,
+	f := filter{
+		name:      filterToken.literal,
 		arguments: args,
+		position:  filterToken.position,
 	}
 
 	return &f, nil

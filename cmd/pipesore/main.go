@@ -7,24 +7,17 @@ import (
 	"github.com/dyson/pipesore/internal/pipesore"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 func main() {
-	s, err := run()
+	s, err := pipesore.Run(version, commit, date)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 	}
 
 	os.Exit(s)
-}
-
-func run() (int, error) {
-	if len(os.Args) != 2 {
-		return 1, fmt.Errorf("use a single string to define pipeline")
-	}
-
-	err := pipesore.Execute(os.Args[1], os.Stdin, os.Stdout)
-	if err != nil {
-		return 1, fmt.Errorf("error executing pipeline: %w", err)
-	}
-
-	return 0, nil
 }

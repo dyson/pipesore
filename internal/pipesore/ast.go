@@ -1,20 +1,21 @@
 package pipesore
 
 type ast struct {
-	functions []function
+	filters []filter
 }
 
 func newAST() *ast {
 	return &ast{
-		functions: []function{},
+		filters: []filter{},
 	}
 }
 
-type function struct {
+type filter struct {
 	name      string
 	arguments []any
+	position
 }
 
-func (f function) isNot() bool {
+func (f filter) isNot() bool {
 	return f.name[0:1] == "!"
 }

@@ -4,14 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"unicode"
 )
 
 type lexer struct {
 	input    string
 	position int
 }
-
-type filter func(ch byte) bool
 
 func newLexer(input string) *lexer {
 	l := &lexer{input: input}
@@ -23,30 +22,41 @@ func (l *lexer) getToken() token {
 	var tl string
 
 	ch := l.getSignificantChar()
-
-	if isFunction(ch) {
+	start := l.position
+	if isFilter(ch) {
 		return token{
-			ttype:   FUNCTION,
-			literal: l.getString(isFunction),
+			ttype:   FILTER,
+			literal: l.getString(isFilter),
+			position: position{
+				start: start,
+				end:   l.position,
+			},
 		}
 	} else if isDigit(ch) {
 		return token{
 			ttype:   INT,
 			literal: l.getString(isDigit),
+			position: position{
+				start: start,
+				end:   l.position,
+			},
 		}
 	} else if isQuote(ch) {
 		str, err := l.getQuotedString()
-
 		if err == nil {
 			tt = STRING
 			tl = str
 		} else {
 			tt = ILLEGAL
-			tl = fmt.Sprintf("%v in %s", err, str)
+			tl = fmt.Sprintf("%v '%s'", err, str)
 		}
 		return token{
 			ttype:   tt,
 			literal: tl,
+			position: position{
+				start: start,
+				end:   l.position,
+			},
 		}
 	}
 
@@ -63,9 +73,20 @@ func (l *lexer) getToken() token {
 		tt = EOF
 	}
 
+	if unicode.IsPrint(rune(ch)) {
+		tl = string(ch)
+	}
+
 	l.position++
 
-	return token{ttype: tt, literal: string(ch)}
+	return token{
+		ttype:   tt,
+		literal: tl,
+		position: position{
+			start: start,
+			end:   l.position,
+		},
+	}
 }
 
 func (l *lexer) getSignificantChar() byte {
@@ -79,7 +100,7 @@ func (l *lexer) getSignificantChar() byte {
 	return ch
 }
 
-func (l *lexer) getString(fn filter) string {
+func (l *lexer) getString(fn func(byte) bool) string {
 	startPosition := l.position
 	l.position++
 
@@ -125,7 +146,7 @@ func isWhitespace(ch byte) bool {
 	return ch == ' '
 }
 
-func isFunction(ch byte) bool {
+func isFilter(ch byte) bool {
 	return ch == '!' || 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z'
 }
 

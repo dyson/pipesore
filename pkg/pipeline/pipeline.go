@@ -33,7 +33,6 @@ func (p *pipeline) SetError(err error) {
 // the filter errors the error is set on the pipeline.
 func (p *pipeline) Filter(filter func(io.Reader, io.Writer) error) {
 	r := p.r
-
 	pr, pw := io.Pipe()
 
 	go func() {

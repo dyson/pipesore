@@ -14,25 +14,136 @@ import (
 	"unicode/utf8"
 )
 
+type filters map[string]filter
+
+func (f filters) GetOrderedNames() []string {
+	names := []string{}
+	for name := range f {
+		names = append(names, name)
+	}
+
+	sort.SliceStable(names, func(i, j int) bool {
+		iName := names[i]
+		iNot := false
+
+		jName := names[j]
+
+		if iName[0] == '!' {
+			iName = iName[1:]
+			iNot = true
+		}
+
+		if jName[0] == '!' {
+			jName = jName[1:]
+		}
+
+		if iName != jName {
+			return iName < jName
+		}
+
+		if iNot == true {
+			return false
+		}
+
+		return true
+	})
+
+	return names
+}
+
+type filter struct {
+	Value       reflect.Value
+	Definition  string
+	Description string
+}
+
 var (
-	Filters = map[string]reflect.Value{
-		"columns":      reflect.ValueOf(Columns),
-		"columnscsv":   reflect.ValueOf(ColumnsCSV),
-		"countlines":   reflect.ValueOf(CountLines),
-		"countrunes":   reflect.ValueOf(CountRunes),
-		"countwords":   reflect.ValueOf(CountWords),
-		"first":        reflect.ValueOf(First),
-		"!first":       reflect.ValueOf(NotFirst),
-		"frequency":    reflect.ValueOf(Frequency),
-		"join":         reflect.ValueOf(Join),
-		"last":         reflect.ValueOf(Last),
-		"!last":        reflect.ValueOf(NotLast),
-		"match":        reflect.ValueOf(Match),
-		"!match":       reflect.ValueOf(NotMatch),
-		"matchregex":   reflect.ValueOf(MatchRegex),
-		"!matchregex":  reflect.ValueOf(NotMatchRegex),
-		"replace":      reflect.ValueOf(Replace),
-		"replaceregex": reflect.ValueOf(ReplaceRegex),
+	Filters = filters{
+		"columns": {
+			reflect.ValueOf(Columns),
+			"Columns(delimiter string, columns string)",
+			"Returns the selected `columns` in order where `columns is a 1-indexed comma separated list of column positions. Columns are defined by splitting with the `delimiter`.",
+		},
+		"columnscsv": {
+			reflect.ValueOf(ColumnsCSV),
+			"ColumnsCSV(delimiter string, columns string)",
+			"Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Parsing is CSV aware so quoted columns containing the `delimiter` when splitting are preserved.",
+		},
+		"countlines": {
+			reflect.ValueOf(CountLines),
+			"CountLines()",
+			"Returns the line count. Lines are delimited by `\\r\\n`.",
+		},
+		"countrunes": {
+			reflect.ValueOf(CountRunes),
+			"CountRunes()",
+			"Returns the rune (Unicode code points) count. Erroneous and short encodings are treated as single runes of width 1 byte.",
+		},
+		"countwords": {
+			reflect.ValueOf(CountWords),
+			"CountWords()",
+			"Returns the word count. Words are delimited by `\\t|\\n|\\v|\\f|\\r|\u00A0|0x85|0xA0`.",
+		},
+		"first": {
+			reflect.ValueOf(First),
+			"First(n int)",
+			"Returns first `n` lines where `n` is a positive integer. If the input has less than `n` lines, all lines are returned.",
+		},
+		"!first": {
+			reflect.ValueOf(NotFirst),
+			"!First(n int)",
+			"Returns all but the the first `n` lines where `n` is a positive integer. If the input has less than `n` lines, no lines are returned.",
+		},
+		"frequency": {
+			reflect.ValueOf(Frequency),
+			"Frequency()",
+			"Returns a descending list containing frequency and unique line. Lines with equal frequency are sorted alphabetically.",
+		},
+		"join": {
+			reflect.ValueOf(Join),
+			"Join(delimiter string)",
+			"Joins all lines together seperated by `delimiter`.",
+		},
+		"last": {
+			reflect.ValueOf(Last),
+			"Last(n int)",
+			"Returns last `n` lines where `n` is a positive integer. If the input has less than `n` lines, all lines are returned.",
+		},
+		"!last": {
+			reflect.ValueOf(NotLast),
+			"!Last(n int)",
+			"Returns all but the last `n` lines where `n` is a positive integer. If the input has less than `n` lines, no lines are returned.",
+		},
+		"match": {
+			reflect.ValueOf(Match),
+			"Match(substring string)",
+			"Returns all lines that contain `substring`.",
+		},
+		"!match": {
+			reflect.ValueOf(NotMatch),
+			"!Match(substring string)",
+			"Returns all lines that don't contain `substring`.",
+		},
+		"matchregex": {
+			reflect.ValueOf(MatchRegex),
+			"MatchRegex(regex string)",
+			"Returns all lines that match the compiled regular expression 'regex'. Regex is in the form of Re2 (https://github.com/google/re2/wiki/Syntax).",
+		},
+		"!matchregex": {
+			reflect.ValueOf(NotMatchRegex),
+			"!MatchRegex(regex string)",
+			"Returns all lines that don't match the compiled regular expression 'regex'. Regex is in the form of Re2 (https://github.com/google/re2/wiki/Syntax).",
+		},
+		"replace": {
+			reflect.ValueOf(Replace),
+			"Replace(old string, replace string)",
+			"Replaces all non-overlapping instances of `old` with `replace`.",
+		},
+		"replaceregex": {
+			reflect.ValueOf(ReplaceRegex),
+			"ReplaceRegex(regex string, replace string)",
+			"Replaces all matches of the compiled regular expression `regex` with `replace`. Inside `replace`, `$` signs represent submatches. For example `$1` represents the text of the first submatch. Regex is in the form of Re2 (https://github.com/google/re2/wiki/Syntax).",
+		},
 	}
 )
 
@@ -428,8 +539,6 @@ func ReplaceRegex(regex *regexp.Regexp, replace string) func(io.Reader, io.Write
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
-// MIT License
 
 // Frequency returns a filter that writes unique lines from the input, prefixed
 // with a frequency count, in descending numerical order (most frequent lines

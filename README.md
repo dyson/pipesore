@@ -68,14 +68,14 @@ first line of the input and return all other lines.
 
 | Filter                                          |         |
 | ------                                          | ------- |
-| Columns(delimiter *string*, columns *string*)   | Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Columns are defined by splitting with the 'delimiter'. |
+| Columns(delimiter *string*, columns *string*)   | Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Columns are defined by splitting with the `delimiter`. |
 | ColumnsCSV(delimiter *string*, columns *string*)| Returns the selected `columns` in order where `columns` is a 1-indexed comma separated list of column positions. Parsing is CSV aware so quoted columns containing the `delimiter` when splitting are preserved. |
 | CountLines()                                    | Returns the line count. Lines are delimited by `\r?\n`. |
 | CountRunes()                                    | Returns the rune (Unicode code points) count. Erroneous and short encodings are treated as single runes of width 1 byte. |
-| CountWords()                                    | Returns the word count. Words are delimited by<br />`\t\|\n\|\v\|\f\|\r\| \|0x85\|0xA0`. |
+| CountWords()                                    | Returns the word count. Words are delimited by <br />`\t\|\n\|\v\|\f\|\r\| \|0x85\|0xA0`. |
 | First(n int)                                    | Returns first `n` lines where `n` is a positive integer. If the input has less than `n` lines, all lines are returned. |
 | !First(n int)                                   | Returns all but the the first `n` lines where `n` is a positive integer. If the input has less than `n` lines, no lines are returned. |
-| Frequency()                                     | Ruturns a descending list containing frequency and unique line. Lines with equal frequency are sorted alphabetically. |
+| Frequency()                                     | Returns a descending list containing frequency and unique line. Lines with equal frequency are sorted alphabetically. |
 | Join(delimiter *string*)                        | Joins all lines together seperated by `delimiter`. |
 | Last(n int)                                     | Returns last `n` lines where `n` is a positive integer. If the input has less than `n` lines, all lines are returned. |
 | !Last(n int)                                    | Returns all but the last `n` lines where `n` is a positive integer. If the input has less than `n` lines, no lines are returned. |
@@ -84,7 +84,7 @@ first line of the input and return all other lines.
 | MatchRegex(regex *string*)                      | Returns all lines that match the compiled regular expression 'regex'. Regex is in the form of [Re2](https://github.com/google/re2/wiki/Syntax). |
 | !MatchRegex(regex *string*)                     | Returns all lines that don't match the compiled regular expression 'regex'. Regex is in the form of [Re2](https://github.com/google/re2/wiki/Syntax). |
 | Replace(old *string*, replace *string*)         | Replaces all non-overlapping instances of `old` with `replace`. |
-| ReplaceRegex(regex *string*, replace *string*)  | Replaces all matches of the compiled regular expression `regex` with `replace`. Inside `replace`, `$` signs represent submatches. For example `$1` represents the text of the first submatch. |
+| ReplaceRegex(regex *string*, replace *string*)  | Replaces all matches of the compiled regular expression `regex` with `replace`. Inside `replace`, `$` signs represent submatches. For example `$1` represents the text of the first submatch. Regex is in the form of [Re2](https://github.com/google/re2/wiki/Syntax). |
 
 ## License
 See [LICENSE](https://github.com/dyson/pipesore/blob/master/LICENSE) file.

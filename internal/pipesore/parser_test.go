@@ -12,10 +12,10 @@ func TestParse(t *testing.T) {
 	filters := `Replace(" ", "\n") | Freq() | First(1)`
 
 	want := &ast{
-		functions: []function{
-			{name: "Replace", arguments: []any{" ", "\n"}},
-			{name: "Freq", arguments: nil},
-			{name: "First", arguments: []any{1}},
+		filters: []filter{
+			{name: "Replace", arguments: []any{" ", "\n"}, position: position{start: 0, end: 7}},
+			{name: "Freq", arguments: nil, position: position{start: 21, end: 25}},
+			{name: "First", arguments: []any{1}, position: position{start: 30, end: 35}},
 		},
 	}
 

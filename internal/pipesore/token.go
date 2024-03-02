@@ -6,9 +6,9 @@ const (
 	ILLEGAL = iota
 	EOF
 
-	FUNCTION // First
-	INT      // 1234
-	STRING   // hello, world!
+	FILTER // First
+	INT    // 1234
+	STRING // hello, world!
 
 	QUOTE // "
 
@@ -23,9 +23,9 @@ var tokens = [...]string{
 	ILLEGAL: "ILLEGAL",
 	EOF:     "EOF",
 
-	FUNCTION: "FUNCTION",
-	INT:      "INT",
-	STRING:   "STRING",
+	FILTER: "FILTER",
+	INT:    "INT",
+	STRING: "STRING",
 
 	QUOTE: "\"",
 
@@ -42,11 +42,22 @@ func (t tokenType) String() string {
 	return tokens[t]
 }
 
+type position struct {
+	start int
+	end   int
+}
+
 type token struct {
 	ttype   tokenType
 	literal string
+	position
 }
 
 func (t token) String() string {
-	return fmt.Sprintf("{%s %v}", t.ttype, t.literal)
+	s := fmt.Sprintf("'%s'", t.ttype)
+	if t.literal != "" && t.literal != t.ttype.String() {
+		s += fmt.Sprintf(" (%s)", t.literal)
+	}
+
+	return s
 }

@@ -16,7 +16,7 @@ func TestExecute(t *testing.T) {
 	want := "4 bird\n"
 	got := &bytes.Buffer{}
 
-	err := Execute(filters, strings.NewReader(input), got)
+	err := execute(filters, strings.NewReader(input), got)
 	if err != nil {
 		t.Fatal(err)
 	}
