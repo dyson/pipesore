@@ -28,7 +28,7 @@ func printHelp() {
 	w("Filters:")
 	w("  All filters can be '|' (piped) together in any order, although not all ordering is logical.")
 	w("")
-	w("  All filter arguments are required. There a no assumptions about default values.")
+	w("  All filter arguments are required. There are no assumptions about default values.")
 	w("")
 	w("  A filter prefixed with an \"!\" will return the opposite result of the non prefixed filter of the same name. For example `First(1)` would return only the first line of the input and `!First(1)` (read as not first) would skip the first line of the input and return all other lines.")
 	w("")

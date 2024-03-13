@@ -59,7 +59,7 @@ $ echo "cat cat cat dog bird bird bird bird" | pipesore 'Replace(" ", "\n") | Fr
 
 All filters can be '|' (piped) together in any order, although not all ordering is logical.
 
-All filter arguments are required. There a no assumptions about default values.
+All filter arguments are required. There are no assumptions about default values.
 
 A filter prefixed with an "!" will return the opposite result of the non
 prefixed filter of the same name. For example `First(1)` would return only the
